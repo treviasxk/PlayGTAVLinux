@@ -4,11 +4,11 @@
 If you are having trouble launching your GTA V purchased from Epic Games with the Heroic Games Launcher, you can use this alternative executable to launch your game.
 
 ## Installation
-1 - Download the *PlayGTAVLinux.exe* executable from the [releases](https://github.com/treviasxk/PlayGTAVLinux/releases) page.
+1 - Download the **PlayGTAVLinux.exe** executable from the [releases](https://github.com/treviasxk/PlayGTAVLinux/releases) page.
 
 2 - Move the downloaded file to the GTAV root folder.
 
-3 - Go to the Heroic Games Launcher, in GTAV settings->advanced->Select Alternative EXE, select *PlayGTAVLinux.exe* inside the GTAV folder.
+3 - Go to the Heroic Games Launcher, in GTAV settings->advanced->Select Alternative EXE, select **PlayGTAVLinux.exe** inside the GTAV folder.
 
 ## FAQ
 * Does it work on Steam too? - *Not tested yet*
