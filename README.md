@@ -19,3 +19,4 @@ If you are having trouble launching your GTA V purchased from Epic Games with th
 ## Donate
 *Please consider donating if I have helped you, so that I can continue to bring you updates.*
  - Paypal: trevias@live.com
+ - Github: [Sponsor](https://github.com/sponsors/treviasxk)
