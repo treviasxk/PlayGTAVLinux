@@ -22,9 +22,28 @@ internal class Program{
         foreach(var line in Environment.GetCommandLineArgs().Skip(1))
             commandLines += " " + line;
         ShowCredits();
+        RestoreService();
         StartRockstarLauncher();
         StartService();
     }
+
+    private static void RestoreService(){
+        if(File.Exists("C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe")
+        && File.Exists("C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe.old")){
+            Console.WriteLine("[DEBUG] Backup service...");
+            File.Move("C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe", "C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe.new");
+            Console.WriteLine("[DEBUG] Restoring old service...");
+            File.Move("C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe.old", "C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe");
+        }
+        if(File.Exists(@"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe")
+        && File.Exists(@"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe.old")){
+            Console.WriteLine("[DEBUG] Backup service...");
+            File.Move(@"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe", @"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe.new");
+            Console.WriteLine("[DEBUG] Restoring old service...");
+            File.Move(@"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe.old", @"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe");
+        }
+    }
+
 
     static void StartRockstarLauncher(){
         if(!File.Exists(filePlayGTAV)){
