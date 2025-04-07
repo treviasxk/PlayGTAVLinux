@@ -9,8 +9,9 @@ internal class Program{
     // Locations files
     static string filePlayGTAV = @".\PlayGTAV.exe";
     static string fileGTAV = @".\GTA5.exe";
+    static string fileGTAVEnhanced = @".\GTA5_Enhanced.exe";
     static string fileVersion = @".\version.txt";
-    static string fileServiceLog = "C:/ProgramData/Rockstar Games/Launcher/service_log.txt";
+    static string fileServiceLog = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"Rockstar Games\Launcher\") + "service_log.txt";
 
     // CommandLines addicionals
     static string commandLines = "";
@@ -22,29 +23,11 @@ internal class Program{
         foreach(var line in Environment.GetCommandLineArgs().Skip(1))
             commandLines += " " + line;
         ShowCredits();
-        RestoreService();
         StartRockstarLauncher();
         StartService();
     }
 
-    private static void RestoreService(){
-        if(File.Exists("C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe")
-        && File.Exists("C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe.old")){
-            Console.WriteLine("[DEBUG] Backup service...");
-            File.Move("C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe", "C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe.new");
-            Console.WriteLine("[DEBUG] Restoring old service...");
-            File.Move("C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe.old", "C:/ProgramData/Rockstar Games/Launcher/RockstarService.exe");
-        }
-        if(File.Exists(@"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe")
-        && File.Exists(@"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe.old")){
-            Console.WriteLine("[DEBUG] Backup service...");
-            File.Move(@"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe", @"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe.new");
-            Console.WriteLine("[DEBUG] Restoring old service...");
-            File.Move(@"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe.old", @"C:\Program Files\Rockstar Games\Launcher\RockstarService.exe");
-        }
-    }
-
-
+ 
     static void StartRockstarLauncher(){
         if(!File.Exists(filePlayGTAV)){
             Console.WriteLine("[ERROR] {0} not found!", filePlayGTAV);
@@ -61,6 +44,7 @@ internal class Program{
     static void CheckRockstarService(){
         while(true){
             Thread.Sleep(1000);
+            
             if(File.Exists(fileServiceLog)){
                 // Load all lines in array
                 var Lines = File.ReadAllLines(fileServiceLog);
@@ -95,12 +79,13 @@ internal class Program{
 
                 // Start Game
                 if(byPass && !isUpdating){
-                    if(!File.Exists(fileGTAV))
-                        Console.WriteLine("[ERROR] {0} not found!", fileGTAV);
+                    var file = File.Exists(fileGTAV) ? fileGTAV : File.Exists(fileGTAVEnhanced) ? fileGTAVEnhanced : null;
+
+                    if(file == null)
+                        Console.WriteLine("[ERROR] {0} or {1} not found!", fileGTAV, fileGTAVEnhanced);
                     else{
                         Console.WriteLine("[DEBUG] Running GTA V...");
-                        Process.Start(fileGTAV, "-useEpic -fromRGL -EpicPortal");
-
+                        Process.Start(file, "-useEpic -fromRGL -EpicPortal");
                         if(Process.GetProcessesByName("Launcher") is Process[] process){
                             // Minimize Rockstar Launcher                                    
                         }
