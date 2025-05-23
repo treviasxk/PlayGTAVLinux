@@ -3,6 +3,14 @@
 
 If you are having trouble launching your GTA V purchased from Epic Games with the Heroic Games Launcher, you can use this alternative executable to launch your game.
 
+## Feature
+* Checks if the Rockstar launcher has been successfully launched.
+* Checks if the game has been closed and forces all launcher processes to end.
+
+## Command line
+_To log all launch logs._
+``-showlogs``
+
 ## Installation
 1 - Download the **PlayGTAVLinux.exe** executable from the [releases](https://github.com/treviasxk/PlayGTAVLinux/releases) page.
 
