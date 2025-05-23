@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,22 +8,35 @@ using System.Threading;
 internal class Program
 {
     // Locations files
-    static string filePlayGTAV = @".\PlayGTAV.exe";
-    static string fileGTAV = @".\GTA5.exe";
-    static string fileGTAVEnhanced = @".\GTA5_Enhanced.exe";
-    static string fileVersion = @".\version.txt";
+    static string filePlayGTAV = "PlayGTAV";
+    static string fileGTAV = "GTA5";
+    static string fileGTAVEnhanced = "GTA5_Enhanced";
     static string fileServiceLog = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"Rockstar Games\Launcher\") + "service_log.txt";
 
     // CommandLines addicionals
     static string commandLines = "";
     static int lastLine = 0;
 
-    static bool byPass = false, isUpdating = false, IsRunning = false;
+    static bool byPass = false, isUpdating = false, IsRunning = false, CheckClose = false;
+
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr GetConsoleWindow();
+
+    [DllImport("user32.dll")]
+    static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    const int SW_HIDE = 0;
 
     private static void Main(string[] args)
     {
         foreach (var line in Environment.GetCommandLineArgs().Skip(1))
             commandLines += " " + line;
+
+        IntPtr handle = GetConsoleWindow();
+        if(!commandLines.Contains("-showlogs"))
+            ShowWindow(handle, SW_HIDE);
+
         ShowCredits();
         StartRockstarLauncher();
         StartService();
@@ -33,15 +45,15 @@ internal class Program
 
     static void StartRockstarLauncher()
     {
-        if(!File.Exists(filePlayGTAV))
+        if(!File.Exists($@".\{filePlayGTAV}.exe"))
         {
-            Console.WriteLine("[ERROR] {0} not found!", filePlayGTAV);
+            Console.WriteLine("[ERROR] {0} not found!", $@".\{filePlayGTAV}.exe");
             Environment.Exit(0);
         }
         else
         {
             Console.WriteLine("[DEBUG] Running Rockstar Launcher...");
-            Process.Start(filePlayGTAV, commandLines);
+            Process.Start($@".\{filePlayGTAV}.exe", commandLines);
         }
     }
 
@@ -57,18 +69,32 @@ internal class Program
             if (byPass && !isUpdating && IsRunning)
             {
                 var process = Process.GetProcesses();
-                var launcher = process.Where(item => item.ProcessName == "Launcher");
-                if(process.Where(item => item.ProcessName == "GTA5_Enhanced" || item.ProcessName == "GTA5").Count() > 0){
-                    // Minimize Rockstar Launcher
-                    if (launcher.Count() > 0)
+                var launcher = process.Where(item => item.ProcessName == "RockstarService" || item.ProcessName == "Launcher");
+                if (process.Where(item => item.ProcessName == fileGTAVEnhanced || item.ProcessName == fileGTAV).Count() > 0)
+                {
+                    if (!CheckClose)
                     {
                         foreach (var app in launcher)
-                        {
-                            //app.CloseMainWindow();
-                            //Console.WriteLine(app.ProcessName);
-                        }
-                        break;
+                            ShowWindow(app.Handle, SW_HIDE);
+                        Console.WriteLine("[DEBUG] Checking game running.");
                     }
+                    CheckClose = true;
+                }
+                else
+                {
+                    foreach (var app in launcher)
+                    {
+                        if (CheckClose)
+                        {
+                            // Close Rockstar Launcher and Process background
+                            Console.WriteLine("[DEBUG] Exiting...");
+                            process.Where(item => item.ProcessName == filePlayGTAV).First().Kill();
+                            app.Kill();
+                            Console.WriteLine(app.ProcessName);
+                        }
+                    }
+                    if (launcher.Count() == 0)
+                        break;
                 }
                 continue;
             }
@@ -114,10 +140,10 @@ internal class Program
                 // Start Game
                 if (byPass && !isUpdating)
                 {
-                    var file = File.Exists(fileGTAV) ? fileGTAV : File.Exists(fileGTAVEnhanced) ? fileGTAVEnhanced : null;
+                    var file = File.Exists($@".\{fileGTAV}.exe") ? $@".\{fileGTAV}.exe" : File.Exists($@".\{fileGTAVEnhanced}.exe") ? $@".\{fileGTAVEnhanced}.exe" : null;
 
                     if (file == null)
-                        Console.WriteLine("[ERROR] {0} or {1} not found!", fileGTAV, fileGTAVEnhanced);
+                        Console.WriteLine("[ERROR] {0} or {1} not found!", $@".\{fileGTAV}.exe", $@".\{fileGTAVEnhanced}.exe");
                     else
                     {
                         Console.WriteLine("[DEBUG] Running GTA V...");
@@ -150,8 +176,6 @@ internal class Program
         Console.WriteLine("Battle Eye: \t \t {0}", commandLines.Contains("-nobattleye") ? "Disabled" : "Enabled");
         Console.WriteLine("Github: \t \t https://github.com/treviasxk");
         Console.WriteLine("Repository: \t \t https://github.com/treviasxk/PlayGTAVLinux");
-        if (File.Exists(fileVersion))
-            Console.WriteLine("GTA Version: \t \t {0}", File.ReadAllText(fileVersion));
         Console.WriteLine("Version: \t \t 1.0.3.0");
         Console.WriteLine("Created by: \t \t Trevias Xk");
         Console.WriteLine("====================================================");
