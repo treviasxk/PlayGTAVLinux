@@ -13,7 +13,6 @@ PlayGTAVLinux provides a compatibility layer that intercepts the game's launch p
 
 ## Features
 
-- Integrates with the Epic Games Launcher on Linux.
 - Supports Epic Games Launcher Flatpak and Heroic Games Launcher.
 - Initializes the Rockstar Games Launcher before starting GTA V Enhanced.
 - Passes the original Epic Games launch arguments to the game.
@@ -23,7 +22,7 @@ PlayGTAVLinux provides a compatibility layer that intercepts the game's launch p
 
 ### 1. Download
 
-Go to the [Releases page](https://github.com/treviasxk/PlayGTAVLinux/releases) and download the `PlayGTAV.zip` archive.
+Go to the [Releases page](https://github.com/treviasxk/PlayGTAVLinux/releases) and download the `PlayGTAVLinux.zip` archive.
 
 ### 2. Install the wrapper
 
@@ -36,12 +35,10 @@ GTAV/
 ├── PlayGTAVLinux.exe
 ├── EpicGamesLauncher.exe
 ├── PlayGTAV.exe
-├── GTA5_Enhanced_BE.exe
 └── ...
 ```
 
 Make sure both wrapper executables are in the same directory as the original game files.
-
 
 ### 3. Configure your launcher
 
