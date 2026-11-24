@@ -55,7 +55,7 @@ The Epic Games Launcher Flatpak stores game installation information in:
 1. Completely close the Epic Games Launcher.
 2. Open `installations.jsonl` with a text editor.
 3. Find the GTA V installation entry. Check its `dir` field to identify the correct game directory.
-4. In the corresponding installation entry, change the `launchExecutable` property to:
+4. In the corresponding installation entry, change all `launchExecutable` properties to:
 
 ```json
 "launchExecutable": "PlayGTAVLinux.exe"
@@ -63,7 +63,12 @@ The Epic Games Launcher Flatpak stores game installation information in:
 
 5. Save the file and reopen the Epic Games Launcher.
 
-**Important:** `installations.jsonl` uses JSON Lines format, with one JSON object per line. Preserve the existing entries and fields. If multiple records exist for the same installation, make sure the most recent record also has `PlayGTAVLinux.exe` as its launch executable.
+**Important:**
+* You need to update GE-Proton to version 11, this version is required to launch the Rockstar Launcher correctly. Epic Games uses GE-Proton version 10-34, located at `~/.var/app/com.epicgames.launcher/data/com.epicgames.eglv2/compat/runtime/GE-Proton10-34`. Download the latest version of GE-Proton from the [Releases](https://github.com/GloriousEggroll/proton-ge-custom/releases) page and replace all the files inside the `GE-Proton-10-34` folder with the files from `GE-Proton-11-XX`.
+
+* `installations.jsonl` uses JSON Lines format, with one JSON object per line. Preserve the existing entries and fields. If multiple records exist for the same installation, make sure the most recent record also has `PlayGTAVLinux.exe` as its launch executable.
+
+* If you specify an executable that does not exist within the game folder, the Epic Games Launcher will consider the game to have been removed, and it will not appear in your library until you provide a valid, existing file for that parameter.
 
 #### Heroic Games Launcher
 
@@ -115,20 +120,23 @@ cd PlayGTAVLinux
 Configure the Windows cross-compilation build using the project's CMake toolchain file:
 
 ```bash
-cmake -S play -B build -DCMAKE_TOOLCHAIN_FILE=windows.cmake
+cmake -S PlayGTAVLinux -B PlayGTAVLinux/build -DCMAKE_TOOLCHAIN_FILE=windows.cmake
+cmake -S EpicGamesLauncher -B EpicGamesLauncher/build -DCMAKE_TOOLCHAIN_FILE=windows.cmake
 ```
 
 Compile the project:
 
 ```bash
-cmake --build build --config Release
-```
+cmake --build PlayGTAVLinux/build/ --config Release
+cmake --build EpicGamesLauncher/build/ --config Release
 
-The generated Windows executables can then be used in the corresponding game directories.
+# The **PlayGTAVLinux.exe** file will be located at `PlayGTAVLinux/build/PlayGTAVLinux.exe`
+# The **EpicGamesLauncher.exe** file will be located at `EpicGamesLauncher/build/EpicGamesLauncher.exe`
+```
 
 ## Requirements
 
-- GE-Proton version 11-X
+- GE-Proton version 11-XX
 - Epic Games Launcher (Flatpak) or Heroic Games Launcher
 - A working GTA V installation
 
